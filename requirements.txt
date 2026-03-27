@@ -15,4 +15,5 @@ djangorestframework-simplejwt
 # Utilitaires (Gestion des images et environnement)
 Pillow
 django-filter
+django-tidb
 python-dotenv
