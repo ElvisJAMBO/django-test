@@ -11,7 +11,6 @@ Une application complète de gestion de tâches et d'emplois du temps pour étud
 - **Gestion des Tâches (CRUD) :** Création, lecture, mise à jour et suppression de tâches avec images.
 - **Gestion des Étudiants :** Profils complets avec photos et emails.
 - **Emploi du Temps (Schedule) :** Planification des tâches par étudiant, par jour et par semaine.
-- **Architecture Propre :** Utilisation du pattern Singleton dans Flutter pour la gestion de l'API.
 
 ## 🛠️ Installation
 
