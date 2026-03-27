@@ -106,15 +106,18 @@ WSGI_APPLICATION = 'Hello.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL', 'mysql://root:password@127.0.0.1:3306/school'),
+        default=os.getenv('DATABASE_URL'),
         conn_max_age=600,
     )
 }
 
-# Si on est en ligne (DATABASE_URL contient 'aivencloud' ou 'tidb'), on force le SSL
-if 'DATABASE_URL' in os.environ:
+# Configuration spécifique pour TiDB Cloud
+if 'tidbcloud' in os.getenv('DATABASE_URL', ''):
+    DATABASES['default']['ENGINE'] = 'django_tidb'
     DATABASES['default']['OPTIONS'] = {
-        'ssl': {'ca': os.path.join(BASE_DIR, 'ca.pem')} # On verra comment créer ce fichier ca.pem après
+        'ssl': {
+            'ca': os.path.join(BASE_DIR, 'isrgrootx1.pem') # On va télécharger ce fichier
+        }
     }
 
 
