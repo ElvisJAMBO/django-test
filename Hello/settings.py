@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import django
+import dj_database_url
+from dotenv import load_dotenv
 import os
 from django.db.backends.base.base import BaseDatabaseWrapper
 BaseDatabaseWrapper.check_database_version_supported = lambda x: None
@@ -31,13 +33,14 @@ DatabaseFeatures.has_select_for_update_skip_locked = property(lambda x: False)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
+load_dotenv()
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-2+k9_9$^t43*jgo%gstt8^rcg!s+9rm+o*%m^gqx1_rxrwm75z'
+SECRET_KEY = os.getenv('SECRET_KEY', 'n1wxru^oe4/dn@utfvwhh_58)#ldw#lw09d8e(@kn$r$@kof1f')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -57,6 +60,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -89,16 +93,29 @@ WSGI_APPLICATION = 'Hello.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'school',
+#         'USER': 'root',          
+#         'PASSWORD': '',          
+#         'HOST': '127.0.0.1',
+#         'PORT': '3306',
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'school',
-        'USER': 'root',          
-        'PASSWORD': '',          
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-    }
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL', 'mysql://root:password@127.0.0.1:3306/school'),
+        conn_max_age=600,
+    )
 }
+
+# Si on est en ligne (DATABASE_URL contient 'aivencloud' ou 'tidb'), on force le SSL
+if 'DATABASE_URL' in os.environ:
+    DATABASES['default']['OPTIONS'] = {
+        'ssl': {'ca': os.path.join(BASE_DIR, 'ca.pem')} # On verra comment créer ce fichier ca.pem après
+    }
 
 
 # Password validation
@@ -136,6 +153,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 CORS_ALLOW_ALL_ORIGINS = True
 
