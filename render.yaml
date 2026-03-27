@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: django-schedule-api  
+    env: python
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+      python manage.py migrate
+    startCommand: gunicorn Hello.wsgi:application
+    envVars:
+      - key: DATABASE_URL
+        sync: false # Tu la rempliras dans l'interface Render
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: PYTHON_VERSION
+        value: 3.14.0
